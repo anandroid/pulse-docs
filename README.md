@@ -6,6 +6,18 @@ Pulse is a comprehensive project that consists of multiple repositories working 
 
 Pulse is built using modern cloud-native technologies and follows a microservices architecture. The project leverages Google Cloud Platform (GCP) for its infrastructure needs and employs various services for different components of the application.
 
+## Core Service Overview
+
+Pulse is an Express-based service that runs on Cloud Run. It exposes several REST endpoints that combine OpenAI with Google Cloud services. The application can fetch and structure SERP data, manage Firestore documents, and perform scheduled cleanup tasks.
+
+### API Endpoints
+
+- `/serp` – Fetch and parse search results using OpenAI
+- `/firestore/:collection` – Create, update and query documents
+- `/openai/prompt-update` – Update Firestore entries with an OpenAI prompt
+- `/pinecone/delete-all` – Remove all vectors from Pinecone
+- `/cron/ping` – Sample endpoint for Cloud Scheduler
+
 ## Repository Index
 
 ### Core Components
