@@ -112,12 +112,21 @@ Infrastructure as Code (IaC) configuration for deploying the Pulse project on Go
 
 ### Local Development
 
-1. Clone the repositories:
+1. Clone the repositories using the provided setup script:
+```bash
+./setup_repos.sh /path/to/dev/folder
+```
+The script will fetch all Pulse repositories (core, UI, APIs, type registry and
+Terraform configuration) into the specified directory. If no path is supplied,
+the current directory is used.
+
+If you prefer to clone manually:
 ```bash
 git clone https://github.com/anandroid/pulse.git
 git clone https://github.com/anandroid/pulse-ui.git
 git clone https://github.com/anandroid/pulse-apis.git
 git clone https://github.com/anandroid/pulse-type-registry.git
+git clone https://github.com/anandroid/terraform-gcp.git
 ```
 
 2. Install dependencies:
