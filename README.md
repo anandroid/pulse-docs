@@ -1,6 +1,6 @@
 # Pulse: A Hyperlocal Information Platform
 
-Pulse is a mission-critical platform designed to deliver hyperlocal information with high availability and real-time accuracy. It addresses the challenge of aggregating, processing, and serving localized data streams efficiently, providing users with timely and relevant insights. Pulse is architected to support a growing ecosystem of services and applications that depend on precise, context-aware information.
+Pulse is a platform designed to deliver hyperlocal information with high availability and real-time accuracy. It addresses the challenge of aggregating, processing, and serving localized data streams efficiently, providing users with timely and relevant insights. Pulse is architected to support a growing ecosystem of services and applications that depend on precise, context-aware information.
 
 ## Architectural Philosophy
 
