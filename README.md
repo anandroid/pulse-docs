@@ -80,13 +80,13 @@ Contains the Infrastructure as Code (IaC) configurations for deploying and manag
 
 ### Local Development
 
-1.  **Clone Repositories:** It is recommended to clone all relevant Pulse component repositories. While a setup script (`setup_repos.sh`) may be available, manual cloning is also an option:
+1.  **Clone Repositories:** Use the `setup.sh` script to clone all Pulse repositories. Provide your GitHub credentials via environment variables:
     ```bash
-    # Example for the core pulse repository:
-    git clone <URL_to_pulse_repository> 
-    # Repeat for other component repositories (pulse-ui, pulse-apis, etc.)
+    export GITHUB_USERNAME=<your-username>
+    export GITHUB_TOKEN=<your-token>
+    ./setup.sh
     ```
-    *Note: Refer to the central project documentation or internal resources for the precise repository URLs.*
+    If authentication isn't required, you can run `setup_repos.sh` directly or clone repositories manually.
 
 2.  **Install Dependencies:** Navigate into each cloned repository directory and install its specific dependencies.
     ```bash
