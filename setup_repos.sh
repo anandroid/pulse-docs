@@ -13,7 +13,8 @@ REPOS=(
   "pulse-ui"
   "pulse-apis"
   "pulse-type-registry"
-  "terraform-gcp"
+  "terraform-gcp",
+  "n8n-sync"
 )
 
 target_dir="${1:-.}"
