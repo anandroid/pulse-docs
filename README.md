@@ -1,34 +1,90 @@
-# Pulse Engineering Guide
+# Pulse Engineering Blueprint
 
-Pulse delivers hyperlocal information through a collection of microservices running on Google Cloud. This document focuses on the system's architecture and how the various repositories fit together.
+Pulse is a collection of microservices that deliver hyperlocal information. All services run on Google Cloud and are orchestrated with Terraform and n8n. This document acts as a high-level blueprint for developers joining the project.
 
-## Automation Blueprint
+## Architecture Overview
 
-Automation is stored in the `n8n-sync` repository. The workflow `pulse_background_processing.json` orchestrates background tasks like data enrichment and cleanup. n8n triggers these flows on a schedule and calls into the `pulse` and `pulse-apis` services to update Firestore and other stores.
+```
+    +---------+       +----------------+       +------------+
+    |  pulse  | <---> |  pulse-apis    | <---> |  Firestore |
+    +---------+       +----------------+       +------------+
+          ^                 ^                      ^
+          |                 |                      |
+          |            +---------+           +-------------+
+          |            |  n8n    |           | Cloud Run   |
+          |            +---------+           +-------------+
+```
 
-## Repository Overview
+* **pulse** handles SERP processing, document ingest and scheduled maintenance.
+* **pulse-apis** exposes business APIs and third‑party integrations.
+* **pulse-ui** is a mobile‑first web application displaying real‑time data to users.
+* **pulse-type-registry** defines shared TypeScript types and Zod schemas.
+* **terraform-gcp** provisions all Google Cloud resources.
+* **n8n-sync** stores version‑controlled n8n workflows.
 
-- **pulse** – Node.js service exposing REST endpoints for SERP processing, document management and scheduled maintenance.
-- **pulse-apis** – Collection of backend APIs providing business logic and external integrations.
-- **pulse-ui** – Mobile-first web application for displaying real-time data.
-- **pulse-type-registry** – Shared TypeScript types and Zod schemas used across the platform.
-- **terraform-gcp** – Terraform configuration for all Google Cloud infrastructure.
-- **n8n-sync** – Version-controlled n8n workflows, including `pulse_background_processing.json`.
+## Repository Map
 
-## Operational Model
+The project spans several repositories that work together:
 
-Services are containerized and deployed on Cloud Run. Firestore is the primary datastore, while Cloud Scheduler triggers maintenance endpoints. n8n flows call the APIs defined in `pulse` and `pulse-apis` to keep data fresh. Terraform provisions and manages all infrastructure so environments remain reproducible.
+| Repository | Description |
+|------------|-------------|
+| `pulse` | Node.js service providing REST endpoints for ingesting SERP results, managing documents and running scheduled jobs. |
+| `pulse-apis` | Backend service containing business logic, database access and third-party integrations. |
+| `pulse-ui` | Web client built with a mobile-first approach. Consumes APIs from `pulse` and `pulse-apis`. |
+| `pulse-type-registry` | Shared library of TypeScript types and validation schemas. Keeps the entire stack in sync. |
+| `terraform-gcp` | Terraform configuration that defines Cloud Run services, Firestore indexes, Cloud Scheduler jobs and other infrastructure. |
+| `n8n-sync` | Collection of n8n workflows. The `pulse_background_processing.json` flow orchestrates enrichment and cleanup jobs by calling service endpoints. |
+
+## Automation
+
+Automation lives in the `n8n-sync` repository. Workflows trigger on schedules and call `pulse` and `pulse-apis` to refresh data stores. Keeping the workflows in version control ensures that automation changes are peer reviewed alongside code changes.
+
+## Local Development Setup
+
+1. Export GitHub credentials for cloning private repositories:
+   ```bash
+   export GITHUB_USERNAME=<your-username>
+   export GITHUB_TOKEN=<personal-access-token>
+   ```
+2. Clone all repositories using the helper script:
+   ```bash
+   ./setup.sh ~/pulse
+   ```
+3. Follow the README in each cloned repository to install dependencies and start local servers. Node.js projects typically use `npm install` and `npm run dev`.
+4. Authenticate with Google Cloud if you need to run services against cloud resources:
+   ```bash
+   gcloud auth application-default login
+   ```
+
+## Infrastructure and Deployment
+
+Infrastructure is defined in the `terraform-gcp` repository. Typical deployment flow:
+
+1. Build container images with Docker or Cloud Build.
+2. Push images to Google Container Registry.
+3. Apply Terraform to create or update Cloud Run services, Firestore databases and scheduled jobs.
+4. n8n flows automatically invoke service endpoints to perform background processing once infrastructure is live.
+
+## Data Flow
+
+1. Clients send data to the `pulse` service.
+2. `pulse` forwards requests to `pulse-apis` for business logic and persistence.
+3. Firestore stores core documents and search results.
+4. n8n workflows periodically trigger cleanup or enrichment operations by hitting service endpoints.
+5. `pulse-ui` fetches data from `pulse-apis` and renders dashboards for end users.
 
 ## Contributing
 
-Follow the coding standards of each repository and keep tests and OpenAPI specifications in sync with implemented APIs. Issues and feature requests should be opened in the appropriate repository.
+* Use feature branches and open pull requests for review.
+* Keep unit tests and OpenAPI specifications in sync with code.
+* Run `shellcheck` on shell scripts and existing test suites in each repository before submitting changes.
 
-## Setup
+## Quick Reference
 
-Clone all repositories with the provided script:
-
+To clone repositories without prompts:
 ```bash
-./setup.sh
+GITHUB_USERNAME=me GITHUB_TOKEN=secret ./setup.sh ~/pulse
 ```
+All repositories will be created under `~/pulse`.
 
-Consult the README inside each cloned repository for project-specific instructions.
+Consult the READMEs inside each repository for service-specific commands and environment variables.
